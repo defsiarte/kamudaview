@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head></head>
+<meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0,user-scalable=yes">
+<link rel="stylesheet" type="text/css" href="./main.css">
+<link rel="stylesheet" href="https://use.typekit.net/sni8hky.css">
+<link rel="stylesheet" href="https://use.typekit.net/sni8hky.css">
+</html>
+<title> Kamuda Viewer</title>
+
+    <!--<script src="./main.js"></script>
+  <script src="./three.js-master/examples/jsm/controls/OrbitControls.js"></script>
+  <script>
+  var scene,camera;
+  var main = function () {
+    // ■ Create scene
+    scene = new THREE.Scene();
+
+    // Get target canvas
+    let can=document.getElementById('can');
+    // Get canvas width and height
+    let w = parseInt(can.style.width);
+    let h = parseInt(can.style.height);
+
+    // ■ Create and set camera
+    // THREE.PerspectiveCamera( field of view (deg), aspect ratio, near clipping plane, far clipping plane );
+    camera = new THREE.PerspectiveCamera( 30, w/h, 0.1, 10000 );
+    camera.position.set( 0, 0, 1 );// set camera position
+    scene.add( camera );
+
+    // ■ Place renderer on DOM(canvas)
+    renderer = new THREE.WebGLRenderer({canvas:can , antialias: true});// enable antialiasing
+    renderer.setSize( w, h );
+    renderer.setClearColor(0x444444, 1);
+
+    // ■ Load and set texture mapping image
+    // Load texture image to apply to sphere
+    let Texture360=new THREE.TextureLoader().load('./r7.png');
+    Texture360.wrapS=THREE.RepeatWrapping;
+    Texture360.wrapT=THREE.RepeatWrapping;
+    // Set texture repeat count
+    Texture360.repeat.set(1,1);
+
+    // Create basic material for sphere
+    let SphereMaterial=new THREE.MeshBasicMaterial({
+      color:0xFFFFFF,
+      side:THREE.BackSide,// set to display inside surface
+      map: Texture360
+    });
+
+    // Create sphere geometry (radius, width segments, height segments)
+    let SphereGeometry=new THREE.SphereGeometry(1,32,24);
+
+    // Create sphere mesh
+    let SphereMesh=new THREE.Mesh(SphereGeometry,SphereMaterial);
+    scene.add(SphereMesh);
+
+    // Move with left/right mouse drag + middle button wheel
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);  
+    controls.target.set(0,0,0);
+    controls.enablePan=false; // disable panning
+    controls.enableZoom=false;// disable zoom
+    controls.update();
+    renderLoop();
+  };
+
+  function renderLoop () {
+    requestAnimationFrame( renderLoop );
+    renderer.render( scene, camera );
+  }
+
+  window.addEventListener( 'DOMContentLoaded', main, false );
+  </script>-->
+
+</head>
+<body>
+    <div id="mainThing" >
+        <iframe width="1200" height="700" title="Kamuda Treehouse" scrolling="no" allowfullscreen src="https://renderstuff.com/tools/360-panorama-web-viewer-embed/?image=https://i.postimg.cc/W39TZBvb/r7.png"></iframe>
+<br>
+        This is an interactive model of the Treehouse area of Kamuda. <br>Feel free to scroll using the left mouse button. 
+    </div>
+  <!--canvas id="can" style="width:300px; height:180px;margin:0;padding:0;cursor:grab;"></canvas-->
+</body>
+<footer>
+
+</footer>
