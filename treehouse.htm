@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="canonical" href="https://mam-mam.net/en/javascript/three_js_360_texture.html" />
+
+
+
+  <meta charset="UTF-8">
+
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+
+  <link rel="stylesheet" href="./main.css" />
+  <link rel="stylesheet" href="https://use.typekit.net/sni8hky.css">
+  <link rel="stylesheet" href="https://use.typekit.net/sni8hky.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="./js/mamimageviewer.js"></script>
+<script>
+  window.addEventListener('load',function(){
+    document.getElementsByTagName('main')[0].addEventListener('click',function(){});
+  });
+</script>
+  <title>Kamuda Viewer</title>
+  <meta name="bro idk">
+  <meta name="Keywords" content="3D,WebGL,three.js,javascript">
+  <link rel="alternate" hreflang="ja" href="https://mam-mam.net/javascript/three_js_360_texture.html">
+  <link rel="alternate" hreflang="en" href="https://mam-mam.net/en/javascript/three_js_360_texture.html">
+  <link rel="alternate" hreflang="x-default" href="https://mam-mam.net/en/javascript/three_js_360_texture.html">
+
+  <script src="./three_r145/three.min.js"></script>
+  <script src="./three_r145/OrbitControls.js"></script>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Three.jsで360度画像をパノラマ表示｜球体マッピングによる視点回転の実装例",
+  "description": "Three.jsで360度画像を球体にマッピングし、自由な視点回転が可能なパノラマ表示の実装例です。OrbitControlsを使ってマウス操作で回転、WebGLベースで軽量。スマホで撮影した全天球画像の再現にも最適です。",
+  "author": {
+    "@type": "Person",
+    "name": "mam"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "mam-mam.net"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://mam-mam.net/javascript/three_js_360_texture.html"
+  },
+  "datePublished": "2025-09-05"
+}
+</script>
+
+<style>
+  pre.fblack{background:black;color:#FFF;padding:0.5em;}
+  pre.fgray{background:#F4F4F4;color:#000;padding:0.5em;}
+  code{font-weight:bold;font-size:0.9em;color:#333;}
+  table{border-collapse:collapse;}
+  td,th{border:1px solid #AAA;}
+  .fred{color:red;font-weight:bold;}
+  .fblue{color:blue;font-weight:bold;}
+  .forange{color:orange;font-weight:bold;}
+</style>
+<script>
+  var scene,camera;
+  var main = function () {
+    //■シーンを作成
+    scene = new THREE.Scene();
+
+    //描画先canvasを取得
+    let can=document.getElementById('can');
+    //canvasの高さ,幅を取得
+    let w = parseInt(can.style.width);
+    let h = parseInt(can.style.height);
+
+    //■カメラを作って設定
+    //THREE.PerspectiveCamera( 画角(度), アスペクト比, カメラに写る最短距離, カメラに写る最長距離 );
+    camera = new THREE.PerspectiveCamera( 30, w/h, 0.1, 10000 );
+    camera.position.set( 0, 0, 1 );//カメラの位置を設定
+    //カメラの向きを設定
+    //camera.rotation.set(0,0,0);
+    //camera.lookAt(new THREE.Vector3(0, 0, 0));
+    scene.add( camera );
+
+    //■レンダラーをDOM(canvas)上に設置する
+    renderer = new THREE.WebGLRenderer({canvas:can , antialias: true});//アンチエイリアスをtureにする
+    renderer.setSize( w, h );
+    //シャドー(影)マップを有効にする
+    //renderer.shadowMap.enabled = true;
+    //シャドーマップのタイプを設定(THREE.BasicShadowMap,THREE.PCFShadowMap (default),THREE.PCFSoftShadowMap, THREE.VSMShadowMap)
+    //renderer.shadowMap.type = THREE.PCFShadowMap;
+    //テクスチャーなど外からはいってくるRGBは色の調整が必要になり、以下をtrueにする
+    //renderer.gammaInput = true;
+    //renderer.gammaOutput = true;
+    renderer.setClearColor(0x444444, 1);
+
+/*
+    //■光源------------------------------------------------
+    //環境光（すべての物体にすべての方向から与える光）光の当たらない部分でも真っ黒にならない
+    var AmbientLight=new THREE.AmbientLight(0xffffff,0.4);
+    scene.add( AmbientLight );
+    //スポットライト            色,   強さ,距離,角度(angle),半影[0-1],減衰[1,1]
+    const spotLight=new THREE.SpotLight(0xffffff, 2,1000,Math.PI/8, 0.4, 1);
+    spotLight.position.set(100,400,300);
+    spotLight.target.position.set(0,0,0);
+    spotLight.castShadow=true;//影を表示可能に
+    spotLight.shadow.mapSize.width = 4096;  //影をきれいにする
+    spotLight.shadow.mapSize.height = 4096; //影をきれいにする
+    spotLight.shadow.radius=4;  //影をぼかす（renderer.shadowMap.type=THREE.PCFShadowMapの時）
+    scene.add(spotLight);
+    scene.add(spotLight.target);
+    //スポットライトの位置が線で表示される
+    //const spotLightHelper = new THREE.SpotLightHelper(spot, 0xffffff);
+    //scene.add(spotLightHelper);
+*/
+
+    //■テクスチャマッピング用画像のロードと設定
+    //球体に貼り付けるテクスチャ画像のロード
+    let Texture360=new THREE.TextureLoader().load('./three_r145/img/r12.png');
+    Texture360.wrapS=THREE.RepeatWrapping;
+    Texture360.wrapT=THREE.RepeatWrapping;
+    //テクスチャの繰り返し回数を指定する
+    Texture360.repeat.set(1,1);
+
+    //球体用の基本マテリアルを作成する
+    let SphereMaterial=new THREE.MeshBasicMaterial({
+      color:0xFFFFFF,
+      side:THREE.BackSide,//両面を表示する設定
+      map: Texture360
+    });
+
+    //球体ジオメトリの作成(半径、横分割数,高さ方向分割数)
+    let SphereGeometry=new THREE.SphereGeometry(1,32,24);
+
+    //球体のメッシュの作成
+    let SphereMesh=new THREE.Mesh(SphereGeometry,SphereMaterial);
+    scene.add(SphereMesh);
+
+
+    //マウスの左右ドラッグ＋中ボタンの上下ホイールで動かす
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);  
+    controls.target.set(0,0,0);
+    controls.enablePan=false; //パンできなくする
+    controls.enableZoom=false;//ズームできなくする
+    controls.update();
+    renderLoop();
+  };
+
+  function renderLoop () {
+    requestAnimationFrame( renderLoop );
+    //スポットライトへルーパーは更新が必要
+    //spotLightHelper.update();
+    renderer.render( scene, camera );
+  }
+
+  window.addEventListener( 'DOMContentLoaded', main, false );
+</script>
+
+</head>
+<body>
+  <main>
+    <section>
+<h2 style="align-content:center;">Kamuda Live Viewer</h2>
+<p>
+  <canvas id="can" style="width:2880px; height:1800px; max-width:calc(100vw - 36px);max-height:calc((100vw - 36px) * 60 / 100);margin:0;padding:0;cursor:grab;" width="1000" height="600"></canvas>
+  <br>
+  Here is a preview of the forest floor area of Kamuda. Rotate the view with left mouse drag.
+</p>
+</section>
+  </main>
+  <footer>
+    <div style="text-align:center;height:3em;vertical-align:middle;box-sizing:border-box;">Code Copyright 2026 <a href="https://mam-mam.net/">mam</a></div>
+  </footer>
+</body>
+</html>
